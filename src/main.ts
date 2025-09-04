@@ -12,6 +12,8 @@ import path from "path";
 import PostsController from "./Controller/Post/PostsController.js";
 import UserController from "./Controller/User/UserController.js";
 import { fileURLToPath } from "url";
+import AuthorController from "./Controller/Author/AuthorController.js";
+import CreateAuthorController from "./Controller/Author/CreateAuthorController.js";
 
 const app = express();
 app.set("view engine", "twig");
@@ -33,6 +35,22 @@ await Database.connect();
 app.get("/", async (req: Request, res: Response) => {
     const indexController = new IndexController(req, res);
     return indexController.execute();
+});
+
+// Author
+app.get("/authors", (req, res) => {
+    const controller = new AuthorController(req, res);
+    return controller.execute();
+});
+
+app.get("/author/create", (req, res) => {
+    const controller = new CreateAuthorController(req, res);
+    return controller.execute();
+});
+
+app.post("/author/create", (req, res) => {
+    const controller = new CreateAuthorController(req, res);
+    return controller.execute();
 });
 
 // Post

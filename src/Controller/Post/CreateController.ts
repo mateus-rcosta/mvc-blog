@@ -2,6 +2,7 @@ import { type Request, type Response } from "express";
 import { AbstractController } from "../AbstractController.js";
 import Post from "../../Model/Post.js";
 import User from "../../Model/User.js";
+import Author from "../../Model/Author.js";
 import Category from "../../Model/Category.js";
 
 export default class CreateController extends AbstractController {
@@ -21,10 +22,12 @@ export default class CreateController extends AbstractController {
     private async showForm(): Promise<void> {
         try {
             const users = await User.findAll();
+            const authors = await Author.findAll();
             const categories = await Category.findAll();
 
             this.response.render("post/form.twig", {
                 users,
+                authors,
                 categories,
                 post: {} // post vazio para o form
             });
@@ -47,6 +50,7 @@ export default class CreateController extends AbstractController {
                 conteudo.trim(),
                 parseInt(userId, 10),
                 published === 'on',
+                authorId ? parseInt(authorId, 10) : 0,
                 categoryId ? parseInt(categoryId, 10) : 1
             );
 
@@ -57,10 +61,12 @@ export default class CreateController extends AbstractController {
             console.error('Erro ao criar post:', error);
 
             const users = await User.findAll();
+            const authors = await Author.findAll();
             const categories = await Category.findAll();
 
             this.response.render("post/form.twig", {
                 users,
+                authors,
                 categories,
                 post: this.getParams(),
                 error: error instanceof Error ? error.message : 'Erro ao criar post'

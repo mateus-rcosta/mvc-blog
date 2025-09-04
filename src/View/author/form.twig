@@ -1,0 +1,29 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<h1>Criar Novo Autor</h1>
+
+<form action="/author/create" method="POST">
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required
+               class="form-control"
+               value="{{ author.nome | default('') }}">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required
+               class="form-control"
+               value="{{ author.email | default('') }}">
+    </div>
+
+    <div class="form-group">
+        <label for="bio">Bio:</label>
+        <textarea id="bio" name="bio" class="form-control" rows="3">{{ author.bio | default('') }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="/authors" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

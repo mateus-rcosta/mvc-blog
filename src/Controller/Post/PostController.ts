@@ -15,7 +15,7 @@ export default class PostController extends AbstractController {
             this.response.render("post/single.twig", { post });
         } else {
             const posts = await Post.findAll();
-            this.response.render("post.twig", { posts: posts ?? [] });
+            this.response.render("post/post.twig", { posts: posts ?? [] });
         }
     }
 }

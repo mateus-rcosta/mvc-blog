@@ -1,0 +1,17 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<h1>Autores</h1>
+
+<a href="/author/create" class="btn btn-primary">Novo Autor</a>
+
+{% if authors is empty %}
+    <p>Nenhum autor encontrado.</p>
+{% else %}
+    <ul>
+        {% for author in authors %}
+            <li>{{ author.nome }} - {{ author.email }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

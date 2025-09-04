@@ -1,6 +1,7 @@
 /*
   Warnings:
 
+  - Added the required column `author_id` to the `Post` table without a default value. This is not possible if the table is not empty.
   - Added the required column `category_id` to the `Post` table without a default value. This is not possible if the table is not empty.
   - Added the required column `updated_at` to the `User` table without a default value. This is not possible if the table is not empty.
 
@@ -10,6 +11,16 @@ CREATE TABLE "Category" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "nome" TEXT NOT NULL,
     "descricao" TEXT,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Author" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "nome" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "bio" TEXT NOT NULL,
     "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME NOT NULL
 );
@@ -44,8 +55,10 @@ CREATE TABLE "new_Post" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "userId" INTEGER NOT NULL,
+    "author_id" INTEGER NOT NULL,
     "category_id" INTEGER NOT NULL,
     CONSTRAINT "Post_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Post_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "Author" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Post_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 INSERT INTO "new_Post" ("conteudo", "createdAt", "id", "titulo", "updatedAt", "userId") SELECT "conteudo", "createdAt", "id", "titulo", "updatedAt", "userId" FROM "Post";
@@ -66,6 +79,9 @@ PRAGMA defer_foreign_keys=OFF;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_nome_key" ON "Category"("nome");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Author_email_key" ON "Author"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Tag_nome_key" ON "Tag"("nome");

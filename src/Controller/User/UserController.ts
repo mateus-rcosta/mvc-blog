@@ -10,7 +10,7 @@ export default class UserController extends AbstractController {
     public async execute(): Promise<void> {
         const users = await User.findAll();
         this.response.render(
-            "user.twig",
+            "user/user.twig",
             { users: users ?? [] }
         );
     }
