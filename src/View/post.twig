@@ -1,0 +1,22 @@
+{# src/View/post.twig #}
+{# Aqui extendemos o layout criado anteriormente para
+reaproveitar a estrutura base #}
+{% extends "layout.twig" %}
+
+{# Dentro desse template filho,
+definimos o bloco 'content' que foi declarado no layout #}
+{% block content %}
+    {# Vamos adicionar um if para validar se temos algum post #}
+    {% if posts is empty %}
+        <p>Nenhum post encontrado.</p>
+    {% else %}
+        <h1>Posts Recentes</h1>
+        {# Agora criamos um loop para exibir todos os posts #}
+        {% for post in posts %}
+            <article>
+                <h2>{{ post.titulo }}</h2>
+                <p>{{ post.conteudo }}</p>
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

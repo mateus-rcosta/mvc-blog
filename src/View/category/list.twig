@@ -1,0 +1,18 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    {% if categories is empty %}
+        <p>Nenhuma categoria encontrada.</p>
+    {% else %}
+        <h1>Categorias</h1>
+        {% for category in categories %}
+            <article>
+                <h2>{{ category.nome }}</h2>
+                {% if category.descricao %}
+                    <p>{{ category.descricao }}</p>
+                {% endif %}
+            </article>
+        {% endfor %}
+    {% endif %}
+    <a href="/category/create">Criar Nova Categoria</a>
+{% endblock %}

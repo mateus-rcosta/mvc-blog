@@ -1,0 +1,16 @@
+{# src/View/layout.twig #}
+<html>
+    <head>
+        {# para definir variaveis dentro do template use {{ variavel }} #}
+        <title>{{ tituloDaPagina ?? "Meu Blog" }}</title>
+        {# nesse caso estamos utilizando a variavel titulo da pagina
+        quando ela não for definida, o valor padrão será "Meu Blog" #}
+    </head>
+    <body>
+        {# para definir blocos de conteudo que podem ser sobrescritos utilize
+        {% block nomeDoBloco %} conteudo padrão {% endblock %} #}
+        {# nesse caso estamos definindo um bloco chamado content que pode ser
+        sobrescrito em outros templates #}
+        {% block content %}{% endblock %}
+    </body>
+</html>

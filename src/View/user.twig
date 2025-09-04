@@ -1,0 +1,21 @@
+{# src/View/post.twig #}
+{# Aqui extendemos o layout criado anteriormente para
+reaproveitar a estrutura base #}
+{% extends "layout.twig" %}
+
+{# Dentro desse template filho,
+definimos o bloco 'content' que foi declarado no layout #}
+{% block content %}
+    {# Vamos adicionar um if para validar se temos algum usuário #}
+    {% if users is empty %}
+        <p>Nenhum usuário encontrado.</p>
+    {% else %}
+        <h1>Usuários:</h1>
+        {# Agora criamos um loop para exibir todos os usuários #}
+        {% for user in users %}
+            <article>
+                <h2>{{ user.nome }}</h2>
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

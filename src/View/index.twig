@@ -1,0 +1,9 @@
+{# src/View/index.twig #}
+{# Aqui extendemos o layout criado anteriormente para reaproveitar a estrutura base #}
+{% extends "layout.twig" %}
+
+{# Dentro desse template filho, definimos o bloco 'content' que foi declarado no layout #}
+{% block content %}
+    <h1>{{ titulo }}</h1>
+    <p>{{ conteudo }}</p>
+{% endblock %}

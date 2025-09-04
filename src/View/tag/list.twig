@@ -1,0 +1,15 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    {% if tags is empty %}
+        <p>Nenhuma tag encontrada.</p>
+    {% else %}
+        <h1>Tags</h1>
+        {% for tag in tags %}
+            <article>
+                <h2 style="color: {{ tag.cor }}">{{ tag.nome }}</h2>
+            </article>
+        {% endfor %}
+    {% endif %}
+    <a href="/tag/create">Criar Nova Tag</a>
+{% endblock %}

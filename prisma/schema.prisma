@@ -1,0 +1,60 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../src/generated/prisma"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:../database.sqlite"
+}
+
+model User {
+    id    Int    @id @default(autoincrement())
+    nome  String
+    posts Post[]
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Category {
+    id        Int      @id @default(autoincrement())
+    nome      String   @unique
+    descricao String?
+    posts     Post[]
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Tag {
+    id        Int       @id @default(autoincrement())
+    nome      String    @unique
+    cor       String    @default("#007bff")
+    posts     PostTag[]
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+}
+
+model PostTag {
+    id     Int  @id @default(autoincrement())
+    post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+    postId Int  @map("post_id")
+    tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+    tagId  Int  @map("tag_id")
+
+    @@unique([postId, tagId])
+}
+
+model Post {
+    id        Int      @id @default(autoincrement())
+    titulo    String
+    conteudo   String?
+    slug      String?  @unique
+    published Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int
+    category  Category @relation(fields: [categoryId], references: [id])
+    categoryId Int  @map("category_id")
+    tags      PostTag[]
+}
