@@ -9,11 +9,10 @@ export default class CategoryController extends AbstractController {
 
     public async execute(): Promise<void> {
         const { id } = this.getParams();
-        
+
         if (id) {
-            const category = new Category(id);
-            const loadedCategory = await category.load(parseInt(id));
-            this.response.render("category/single.twig", { category: loadedCategory });
+            const category = await Category.findById(parseInt(id));
+            this.response.render("category/detail.twig", { category });
         } else {
             const categories = await Category.findAll();
             this.response.render("category/list.twig", { categories });

@@ -9,11 +9,16 @@ import { default as CategoryCreateController } from "./Controller/Category/Creat
 import { default as TagCreateController } from "./Controller/Tag/CreateController.js";
 import Database from "./Model/Database.js";
 import path from "path";
-import PostsController from "./Controller/Post/PostsController.js";
 import UserController from "./Controller/User/UserController.js";
 import { fileURLToPath } from "url";
 import AuthorController from "./Controller/Author/AuthorController.js";
 import CreateAuthorController from "./Controller/Author/CreateAuthorController.js";
+import UserDetailController from "./Controller/User/UserDetailController.js";
+import UserDeleteController from "./Controller/User/UserDeleteController.js";
+import TagDeleteController from "./Controller/Tag/TagDeleteController.js";
+import PostDeleteController from "./Controller/Post/PostDeleteController.js";
+import CategoryDeleteController from "./Controller/Category/CategoryDeleteController.js";
+import DeleteAuthorController from "./Controller/Author/DeleteAuthorController.js";
 
 const app = express();
 app.set("view engine", "twig");
@@ -38,11 +43,6 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 // Author
-app.get("/authors", (req, res) => {
-    const controller = new AuthorController(req, res);
-    return controller.execute();
-});
-
 app.get("/author/create", (req, res) => {
     const controller = new CreateAuthorController(req, res);
     return controller.execute();
@@ -52,6 +52,16 @@ app.post("/author/create", (req, res) => {
     const controller = new CreateAuthorController(req, res);
     return controller.execute();
 });
+
+app.get(["/author", "/author/:id"], (req: Request, res: Response) => {
+    const authorController = new AuthorController(req, res);
+    return authorController.execute();
+});
+
+app.get("/author/:id/delete", (req: Request, res: Response) => {
+    const authorController = new DeleteAuthorController(req, res);
+    return authorController.execute();
+})
 
 // Post
 app.get("/post/create", (req: Request, res: Response) => {
@@ -64,14 +74,13 @@ app.post("/post/create", (req: Request, res: Response) => {
     return postController.execute();
 });
 
+app.get("/post/:id/delete", (req: Request, res: Response) => {
+    const postController = new PostDeleteController(req, res);
+    return postController.execute();
+})
 app.get(["/post", "/post/:id"], (req: Request, res: Response) => {
     const postController = new PostController(req, res);
     return postController.execute();
-});
-
-app.get("/posts", async (req: Request, res: Response) => {
-    const postsController = new PostsController(req, res);
-    return postsController.execute();
 });
 
 // Category
@@ -85,6 +94,10 @@ app.post("/category/create", (req: Request, res: Response) => {
     return categoryController.execute();
 });
 
+app.get("/category/:id/delete", (req: Request, res: Response) => {
+    const categoryController = new CategoryDeleteController(req, res);
+    return categoryController.execute();
+})
 app.get(["/category", "/category/:id"], async (req: Request, res: Response) => {
     const categoryController = new CategoryController(req, res);
     return categoryController.execute();
@@ -101,26 +114,43 @@ app.post("/tag/create", (req: Request, res: Response) => {
     return tagController.execute();
 });
 
-
+app.get("/tag/:id/delete", (req: Request, res: Response) => {
+    const tagController = new TagDeleteController(req, res);
+    return tagController.execute();
+})
 app.get(["/tag", "/tag/:id"], async (req: Request, res: Response) => {
     const tagController = new TagController(req, res);
     return tagController.execute();
 });
 
-// User
+// User - Lista
 app.get("/user", async (req: Request, res: Response) => {
     const userController = new UserController(req, res);
     return userController.execute();
 });
 
+// User - Criar (formulário)
 app.get("/user/create", (req: Request, res: Response) => {
     const createController = new UserCreateController(req, res);
     return createController.execute();
 });
 
+// User - Criar (submit)
 app.post("/user/create", (req: Request, res: Response) => {
     const createController = new UserCreateController(req, res);
     return createController.execute();
+});
+
+// User - Detalhes
+app.get("/user/:id", async (req: Request, res: Response) => {
+    const detailController = new UserDetailController(req, res);
+    return detailController.execute();
+});
+
+// User - Deletar
+app.get("/user/:id/delete", async (req: Request, res: Response) => {
+    const deleteController = new UserDeleteController(req, res);
+    return deleteController.execute();
 });
 
 app.listen(3000, () => {

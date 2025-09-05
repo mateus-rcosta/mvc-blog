@@ -5,14 +5,33 @@
         <p>Nenhuma categoria encontrada.</p>
     {% else %}
         <h1>Categorias</h1>
-        {% for category in categories %}
-            <article>
-                <h2>{{ category.nome }}</h2>
-                {% if category.descricao %}
-                    <p>{{ category.descricao }}</p>
-                {% endif %}
-            </article>
-        {% endfor %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.id }}</td>
+                        <td>{{ category.nome }}</td>
+                        <td>{{ category.descricao }}</td>
+                        <td>
+                            <a href="/category/{{ category.id }}" class="btn btn-info btn-sm">Detalhes</a>
+                            <a href="/category/{{ category.id }}/delete" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Deseja realmente deletar esta categoria?');">
+                               Deletar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
-    <a href="/category/create">Criar Nova Categoria</a>
+    <a href="/category/create" class="btn btn-primary">Criar Nova Categoria</a>
 {% endblock %}

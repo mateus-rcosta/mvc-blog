@@ -15,4 +15,8 @@ export abstract class AbstractModel {
     public getId(): number | undefined {
         return this.id;
     }
+
+    public setId(id: number) {
+        this.id = id;
+    }
 }

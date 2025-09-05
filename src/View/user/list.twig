@@ -1,0 +1,43 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    <h1>Usuários</h1>
+
+    <a href="/user/create" class="btn btn-success mb-3">Adicionar Usuário</a>
+
+    {% if users is empty %}
+        <p>Nenhum usuário encontrado.</p>
+    {% else %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Qtd. Posts</th>
+                    <th>Criado em</th>
+                    <th>Atualizado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.nome }}</td>
+                        <td>{{ user.posts|length }}</td>
+                        <td>{{ user.createdAt|date("d/m/Y H:i") }}</td>
+                        <td>{{ user.updatedAt|date("d/m/Y H:i") }}</td>
+                        <td>
+                            <a href="/user/{{ user.id }}" class="btn btn-info btn-sm">Detalhes</a>
+                            <a href="/user/{{ user.id }}/delete/" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Deseja realmente deletar este usuário?');">
+                               Deletar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

@@ -6,50 +6,26 @@ export default class Author extends AbstractModel {
     public nome: string;
     public email: string;
     public bio: string;
-    public createdAt: Date;
-    public updatedAt: Date;
+    public createdAt?: Date;
+    public updatedAt?: Date;
 
     constructor(nome: string = '', email: string = '', bio: string = '') {
         super();
         this.nome = nome;
         this.email = email;
         this.bio = bio;
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 
     public async load(id?: number): Promise<Author | null> {
         const authorId = id ?? this.id;
         if (!authorId) return null;
 
-        const author = await Database.prisma.author.findUnique({
-            where: { id: authorId }
-        });
-
+        const author = await Database.prisma.author.findUnique({ where: { id: authorId } });
         if (!author) return null;
 
         const loaded = Author.fromPrisma(author);
-        this.nome = loaded.nome;
-        this.email = loaded.email;
-        this.bio = loaded.bio;
-        this.createdAt = loaded.createdAt;
-        this.updatedAt = loaded.updatedAt;
-
+        Object.assign(this, loaded);
         return this;
-    }
-
-    public async delete(): Promise<boolean> {
-        if (!this.id) return false;
-
-        try {
-            await Database.prisma.author.delete({
-                where: { id: this.id }
-            });
-            return true;
-        } catch (error) {
-            console.error('Erro ao deletar autor:', error);
-            return false;
-        }
     }
 
     public async save(): Promise<Author> {
@@ -57,7 +33,18 @@ export default class Author extends AbstractModel {
         const author = this.id
             ? await Database.prisma.author.update({ where: { id: this.id }, data })
             : await Database.prisma.author.create({ data });
+
         return Author.fromPrisma(author);
+    }
+
+    public async delete(): Promise<boolean> {
+        if (!this.id) return false;
+        try {
+            await Database.prisma.author.delete({ where: { id: this.id } });
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     public static async findAll(): Promise<Author[]> {

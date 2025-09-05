@@ -1,4 +1,3 @@
-// src/Model/User.ts
 import Database from './Database.js';
 import { AbstractModel } from './AbstractModel.js';
 import type { User as PrismaUser, Post as PrismaPost } from '../generated/prisma/client.js';
@@ -65,12 +64,42 @@ export default class User extends AbstractModel {
         const users = await Database.prisma.user.findMany({
             include: { posts: true }
         });
-        return users.map((user) => User.fromPrisma(user));
+
+        const result = await Promise.all(
+            users.map((user) => User.fromPrisma(user))
+        );
+
+        return result;
     }
 
-    private static fromPrisma(prismaUser: PrismaUser & { posts?: PrismaPost[] }): User {
+    public static async findById(id: number): Promise<User | null> {
+        const prismaUser = await Database.prisma.user.findUnique({
+            where: { id },
+            include: { posts: true }
+        });
+
+        return prismaUser ? User.fromPrisma(prismaUser) : null;
+    }
+
+    private static async fromPrisma(
+        prismaUser: PrismaUser & { posts?: PrismaPost[] }
+    ): Promise<User> {
         const posts: Post[] = prismaUser.posts
-            ? prismaUser.posts.map((p) => Post.fromPrisma(p))
+            ? await Promise.all(
+                prismaUser.posts.map(async (p) => {
+                    const postWithRelations = await Database.prisma.post.findUnique({
+                        where: { id: p.id },
+                        include: {
+                            user: true,
+                            author: true,
+                            category: true,
+                            tags: { include: { tag: true } }
+                        }
+                    });
+                    if (!postWithRelations) throw new Error("Post não encontrado");
+                    return Post.fromPrisma(postWithRelations);
+                })
+            )
             : [];
 
         const user = new User(prismaUser.nome, posts);
@@ -80,4 +109,5 @@ export default class User extends AbstractModel {
 
         return user;
     }
+
 }

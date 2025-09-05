@@ -1,9 +1,13 @@
 {% extends "layout.twig" %}
 
 {% block content %}
-    <h1>Criar Nova Categoria</h1>
+    <h1>{% if category.id %}Editar Categoria{% else %}Criar Nova Categoria{% endif %}</h1>
 
     <form action="/category/create" method="POST">
+        {% if category.id %}
+            <input type="hidden" name="id" value="{{ category.id }}">
+        {% endif %}
+
         <div class="form-group">
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required
@@ -13,9 +17,7 @@
 
         <div class="form-group">
             <label for="descricao">Descrição:</label>
-            <textarea id="descricao" name="descricao"
-                      class="form-control"
-                      rows="3">{{ category.descricao | default('') }}</textarea>
+            <textarea id="descricao" name="descricao" class="form-control" rows="3">{{ category.descricao | default('') }}</textarea>
         </div>
 
         {% if error %}

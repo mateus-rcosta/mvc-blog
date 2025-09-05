@@ -1,16 +1,52 @@
 {# src/View/layout.twig #}
-<html>
-    <head>
-        {# para definir variaveis dentro do template use {{ variavel }} #}
-        <title>{{ tituloDaPagina ?? "Meu Blog" }}</title>
-        {# nesse caso estamos utilizando a variavel titulo da pagina
-        quando ela não for definida, o valor padrão será "Meu Blog" #}
-    </head>
-    <body>
-        {# para definir blocos de conteudo que podem ser sobrescritos utilize
-        {% block nomeDoBloco %} conteudo padrão {% endblock %} #}
-        {# nesse caso estamos definindo um bloco chamado content que pode ser
-        sobrescrito em outros templates #}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tituloDaPagina ?? "Meu Blog" }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 70px; {# Espaço para a navbar fixa #}
+        }
+    </style>
+</head>
+<body>
+    {# Navbar fixa no topo #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Meu Blog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user">Usuários</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/author">Autores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tag">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/category">Categorias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/post">Posts</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
         {% block content %}{% endblock %}
-    </body>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

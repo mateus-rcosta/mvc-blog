@@ -8,7 +8,14 @@ export default class AuthorController extends AbstractController {
     }
 
     public async execute(): Promise<void> {
-        const authors = await Author.findAll();
-        this.response.render("author/list.twig", { authors: authors ?? [] });
+        const { id } = this.getParams();
+
+        if (id) {
+            const author = await new Author().load(parseInt(id));
+            this.response.render("author/detail.twig", { author });
+        } else {
+            const authors = await Author.findAll();
+            this.response.render("author/list.twig", { authors });
+        }
     }
 }

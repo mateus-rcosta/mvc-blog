@@ -15,37 +15,30 @@ export default class Tag extends AbstractModel {
     }
 
     public async load(id: number): Promise<Tag | null> {
-        const tag = await Database.prisma.tag.findUnique({
-            where: { id }
-        });
-
+        const tag = await Database.prisma.tag.findUnique({ where: { id } });
         if (!tag) return null;
-
         this.id = tag.id;
         this.nome = tag.nome;
         this.cor = tag.cor;
         this.createdAt = tag.createdAt;
         this.updatedAt = tag.updatedAt;
-
         return this;
     }
 
     public async save(): Promise<Tag> {
+        if (!this.nome || this.nome.trim() === '') {
+            throw new Error('O nome da tag é obrigatório');
+        }
+
         if (this.id) {
             const updated = await Database.prisma.tag.update({
                 where: { id: this.id },
-                data: {
-                    nome: this.nome,
-                    cor: this.cor
-                }
+                data: { nome: this.nome, cor: this.cor }
             });
             return Tag.fromPrisma(updated);
         } else {
             const created = await Database.prisma.tag.create({
-                data: {
-                    nome: this.nome,
-                    cor: this.cor
-                }
+                data: { nome: this.nome, cor: this.cor }
             });
             return Tag.fromPrisma(created);
         }
@@ -53,11 +46,8 @@ export default class Tag extends AbstractModel {
 
     public async delete(): Promise<boolean> {
         if (!this.id) return false;
-
         try {
-            await Database.prisma.tag.delete({
-                where: { id: this.id }
-            });
+            await Database.prisma.tag.delete({ where: { id: this.id } });
             return true;
         } catch {
             return false;
@@ -66,21 +56,17 @@ export default class Tag extends AbstractModel {
 
     public static async findAll(): Promise<Tag[]> {
         const tags = await Database.prisma.tag.findMany();
-        return tags.map(tag => Tag.fromPrisma(tag));
+        return tags.map(Tag.fromPrisma);
     }
 
-    public static async findByName(nome: string): Promise<Tag | null> {
-        const tag = await Database.prisma.tag.findUnique({
-            where: { nome }
-        });
+    public static async findById(id: number): Promise<Tag | null> {
+        const tag = await Database.prisma.tag.findUnique({ where: { id } });
         return tag ? Tag.fromPrisma(tag) : null;
     }
 
-    private static fromPrisma(prismaTag: PrismaTag): Tag {
-        const tag = new Tag(
-            prismaTag.nome,
-            prismaTag.cor
-        );
+    public static fromPrisma(prismaTag: PrismaTag): Tag {
+        const tag = new Tag(prismaTag.nome, prismaTag.cor);
+        tag.id = prismaTag.id;
         tag.createdAt = prismaTag.createdAt;
         tag.updatedAt = prismaTag.updatedAt;
         return tag;

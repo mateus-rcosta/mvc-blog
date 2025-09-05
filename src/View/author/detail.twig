@@ -1,0 +1,14 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+{% if author %}
+    <h1>{{ author.nome }}</h1>
+    <p><strong>Email:</strong> {{ author.email }}</p>
+    <p><strong>Bio:</strong> {{ author.bio }}</p>
+    <p><strong>ID:</strong> {{ author.id }}</p>
+{% else %}
+    <p>Autor não encontrado.</p>
+{% endif %}
+
+<a href="/author" class="btn btn-secondary">Voltar para lista</a>
+{% endblock %}

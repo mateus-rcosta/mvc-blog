@@ -1,9 +1,13 @@
 {% extends "layout.twig" %}
 
 {% block content %}
-<h1>Criar Novo Autor</h1>
+<h1>{% if author.id %}Editar Autor{% else %}Criar Novo Autor{% endif %}</h1>
 
 <form action="/author/create" method="POST">
+    {% if author.id %}
+        <input type="hidden" name="id" value="{{ author.id }}">
+    {% endif %}
+
     <div class="form-group">
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" required
@@ -23,7 +27,11 @@
         <textarea id="bio" name="bio" class="form-control" rows="3">{{ author.bio | default('') }}</textarea>
     </div>
 
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
     <button type="submit" class="btn btn-primary">Salvar</button>
-    <a href="/authors" class="btn btn-secondary">Cancelar</a>
+    <a href="/author" class="btn btn-secondary">Cancelar</a>
 </form>
 {% endblock %}

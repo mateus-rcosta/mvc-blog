@@ -1,0 +1,15 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    {% if tag %}
+        <h1>Tag: {{ tag.nome }}</h1>
+        <p><strong>ID:</strong> {{ tag.id }}</p>
+        <p><strong>Cor:</strong> <span style="color: {{ tag.cor }}">{{ tag.cor }}</span></p>
+        <p><strong>Criado em:</strong> {{ tag.createdAt|date('d/m/Y H:i') }}</p>
+        <p><strong>Atualizado em:</strong> {{ tag.updatedAt|date('d/m/Y H:i') }}</p>
+        <a href="/tag" class="btn btn-secondary">Voltar</a>
+        <a href="/tag/{{ tag.id }}/delete" class="btn btn-danger" onclick="return confirm('Deseja realmente deletar esta tag?');">Deletar</a>
+    {% else %}
+        <p>Tag não encontrada.</p>
+    {% endif %}
+{% endblock %}

@@ -5,11 +5,29 @@
         <p>Nenhuma tag encontrada.</p>
     {% else %}
         <h1>Tags</h1>
-        {% for tag in tags %}
-            <article>
-                <h2 style="color: {{ tag.cor }}">{{ tag.nome }}</h2>
-            </article>
-        {% endfor %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Cor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                    <tr>
+                        <td>{{ tag.id }}</td>
+                        <td style="color: {{ tag.cor }}">{{ tag.nome }}</td>
+                        <td>{{ tag.cor }}</td>
+                        <td>
+                            <a href="/tag/{{ tag.id }}" class="btn btn-info btn-sm">Detalhes</a>
+                            <a href="/tag/{{ tag.id }}/delete" class="btn btn-danger btn-sm" onclick="return confirm('Deseja realmente deletar esta tag?');">Deletar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
-    <a href="/tag/create">Criar Nova Tag</a>
+    <a href="/tag/create" class="btn btn-primary mt-3">Criar Nova Tag</a>
 {% endblock %}

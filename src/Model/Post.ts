@@ -1,3 +1,4 @@
+// src/Model/Post.ts
 import type {
   Post as PrismaPost,
   User as PrismaUser,
@@ -8,7 +9,7 @@ import type {
 } from '../generated/prisma/client.js';
 import { AbstractModel } from './AbstractModel.js';
 import Database from './Database.js';
-
+import Tag from './Tag.js';
 
 export default class Post extends AbstractModel {
   public titulo: string;
@@ -22,10 +23,10 @@ export default class Post extends AbstractModel {
   public updatedAt: Date;
 
   // relacionamentos
-  public user?: PrismaUser;
-  public author?: PrismaUser;
-  public category?: PrismaCategory;
-  public tags?: PrismaTag[];
+  public user!: PrismaUser;
+  public author!: PrismaAuthor;
+  public category!: PrismaCategory;
+  public tags: Tag[] = [];
 
   constructor(
     titulo: string = '',
@@ -46,6 +47,7 @@ export default class Post extends AbstractModel {
     this.categoryId = categoryId;
     this.createdAt = new Date();
     this.updatedAt = new Date();
+    this.tags = [];
   }
 
   public async load(id: number): Promise<Post | null> {
@@ -63,19 +65,35 @@ export default class Post extends AbstractModel {
   }
 
   public async save(): Promise<Post> {
-    const data = {
+    if (!this.slug) {
+      this.slug = `${this.titulo}-${Date.now()}`;
+    }
+
+    const tagIds = this.tags.map(t => t.getId()).filter(Boolean);
+
+    const data: any = {
       titulo: this.titulo,
       conteudo: this.conteudo || '',
-      slug: this.slug || '',
+      slug: this.slug,
       published: this.published,
       userId: this.userId,
       authorId: this.authorId,
-      categoryId: this.categoryId
+      categoryId: this.categoryId,
+      tags: tagIds.length
+        ? { set: tagIds.map(id => ({ tagId: id })) } 
+        : undefined
     };
 
     const post = this.id
-      ? await Database.prisma.post.update({ where: { id: this.id }, data, include: { user: true, author: true, category: true, tags: { include: { tag: true } } } })
-      : await Database.prisma.post.create({ data, include: { user: true, author: true, category: true, tags: { include: { tag: true } } } });
+      ? await Database.prisma.post.update({
+          where: { id: this.id },
+          data,
+          include: { user: true, author: true, category: true, tags: { include: { tag: true } } }
+        })
+      : await Database.prisma.post.create({
+          data,
+          include: { user: true, author: true, category: true, tags: { include: { tag: true } } }
+        });
 
     return Post.fromPrisma(post);
   }
@@ -91,26 +109,24 @@ export default class Post extends AbstractModel {
     }
   }
 
-  public static async create(titulo: string, conteudo: string, userId: number): Promise<Post> {
-    const prismaPost = await Database.prisma.post.create({
-      data: {
-        titulo,
-        conteudo,
-        userId,
-        slug: '',
-        published: false,
-        authorId: userId,
-        categoryId: 1
-      },
-      include: { user: true, author: true, category: true, tags: { include: { tag: true } } }
-    });
-    return Post.fromPrisma(prismaPost);
+  public static async create(
+    titulo: string,
+    conteudo: string,
+    userId: number,
+    authorId: number,
+    categoryId: number,
+    tags: Tag[] = []
+  ): Promise<Post> {
+    const post = new Post(titulo, conteudo, userId, false, authorId, categoryId);
+    post.tags = tags;
+    return post.save();
   }
 
   public static async findAll(): Promise<Post[]> {
     const posts = await Database.prisma.post.findMany({
       include: { user: true, author: true, category: true, tags: { include: { tag: true } } }
     });
+
     return posts.map(Post.fromPrisma);
   }
 
@@ -119,36 +135,36 @@ export default class Post extends AbstractModel {
       where: { id },
       include: { user: true, author: true, category: true, tags: { include: { tag: true } } }
     });
+
     return post ? Post.fromPrisma(post) : null;
   }
 
- public static fromPrisma(
-  prismaPost: PrismaPost & {
-    user?: PrismaUser;
-    author?: PrismaAuthor;
-    category?: PrismaCategory;
-    tags?: (PrismaPostTag & { tag: PrismaTag })[];
+  public static fromPrisma(
+    prismaPost: PrismaPost & {
+      user: PrismaUser;
+      author: PrismaAuthor;
+      category: PrismaCategory;
+      tags?: (PrismaPostTag & { tag: PrismaTag })[];
+    }
+  ): Post {
+    const post = new Post(
+      prismaPost.titulo,
+      prismaPost.conteudo || '',
+      prismaPost.userId,
+      prismaPost.published,
+      prismaPost.authorId,
+      prismaPost.categoryId,
+      prismaPost.slug || ''
+    );
+
+    post.id = prismaPost.id;
+    post.createdAt = prismaPost.createdAt;
+    post.updatedAt = prismaPost.updatedAt;
+    post.user = prismaPost.user;
+    post.author = prismaPost.author;
+    post.category = prismaPost.category;
+    post.tags = prismaPost.tags?.map(t => Tag.fromPrisma(t.tag)) || [];
+
+    return post;
   }
-): Post {
-  const post = new Post(
-    prismaPost.titulo,
-    prismaPost.conteudo || '',
-    prismaPost.userId,
-    prismaPost.published,
-    prismaPost.authorId,
-    prismaPost.categoryId,
-    prismaPost.slug || ''
-  );
-
-  post.id = prismaPost.id;
-  post.createdAt = prismaPost.createdAt;
-  post.updatedAt = prismaPost.updatedAt;
-  post.user = prismaPost.user!;
-  post.author = prismaPost.author!;
-  post.category = prismaPost.category!;
-  post.tags = prismaPost.tags?.map((t) => t.tag) ?? [];
-
-  return post;
-}
-
 }

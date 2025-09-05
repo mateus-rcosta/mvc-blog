@@ -1,0 +1,28 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+    <h1>Detalhes do Usuário</h1>
+
+    <p><strong>ID:</strong> {{ user.id }}</p>
+    <p><strong>Nome:</strong> {{ user.nome }}</p>
+    <p><strong>Criado em:</strong> {{ user.createdAt|date("d/m/Y H:i") }}</p>
+    <p><strong>Atualizado em:</strong> {{ user.updatedAt|date("d/m/Y H:i") }}</p>
+
+    <h2>Posts</h2>
+    {% if user.posts is empty %}
+        <p>Este usuário ainda não possui posts.</p>
+    {% else %}
+        <ul>
+        {% for post in user.posts %}
+            <li>
+                <strong>{{ post.titulo }}</strong> - 
+                {{ post.createdAt|date("d/m/Y H:i") }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="mt-3">
+        <a href="/user" class="btn btn-secondary">Voltar</a>
+    </div>
+{% endblock %}

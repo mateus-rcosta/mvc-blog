@@ -21,20 +21,26 @@ export default class CreateAuthorController extends AbstractController {
 
     private async processForm(): Promise<void> {
         try {
-            const { nome, email, bio } = this.getParams();
+            const { id, nome, email, bio } = this.getParams();
 
-            if (!nome || !email) {
-                throw new Error('Nome e email são obrigatórios');
+            if (!nome || !email) throw new Error('Nome e email são obrigatórios');
+
+            let author: Author;
+            if (id) {
+                author = await new Author().load(parseInt(id, 10)) ?? new Author();
+                author.nome = nome.trim();
+                author.email = email.trim();
+                author.bio = bio?.trim() || '';
+            } else {
+                author = new Author(nome.trim(), email.trim(), bio?.trim() || '');
             }
 
-            const author = new Author(nome.trim(), email.trim(), bio?.trim() || '');
             await author.save();
-
-            this.response.redirect('/authors');
+            this.response.redirect('/author');
         } catch (error) {
             this.response.render("author/form.twig", {
                 author: this.getParams(),
-                error: error instanceof Error ? error.message : 'Erro ao criar autor'
+                error: error instanceof Error ? error.message : 'Erro ao salvar autor'
             });
         }
     }

@@ -4,73 +4,40 @@ import Post from "../../Model/Post.js";
 import User from "../../Model/User.js";
 import Author from "../../Model/Author.js";
 import Category from "../../Model/Category.js";
+import Tag from "../../Model/Tag.js";
 
-export default class CreateController extends AbstractController {
-    constructor(req: Request, res: Response) {
-        super(req, res);
+export default class PostCreateController extends AbstractController {
+  public async execute(): Promise<void> {
+  if (this.getMethod() === "POST") {
+    const { titulo, conteudo, userId, authorId, categoryId, published, tags } = this.getParams();
+
+    const post = new Post(
+      titulo,
+      conteudo,
+      parseInt(userId, 10),
+      published === "on",
+      parseInt(authorId, 10),
+      parseInt(categoryId, 10),
+    );
+
+    if (tags && Array.isArray(tags)) {
+      post.tags = tags.map(id => {
+        const t = new Tag();
+        t.setId(parseInt(id, 10));
+        return t;
+      });
     }
 
-    public async execute(): Promise<void> {
-        if (this.getMethod() === 'POST') {
-            await this.processForm();
-            return;
-        }
+    await post.save();
+    return this.response.redirect("/post");
+  }
 
-        await this.showForm();
-    }
+  const users = await User.findAll();
+  const authors = await Author.findAll();
+  const categories = await Category.findAll();
+  const tags = await Tag.findAll();
 
-    private async showForm(): Promise<void> {
-        try {
-            const users = await User.findAll();
-            const authors = await Author.findAll();
-            const categories = await Category.findAll();
+  this.response.render("post/form.twig", { post: {}, users, authors, categories, tags, error: null });
+}
 
-            this.response.render("post/form.twig", {
-                users,
-                authors,
-                categories,
-                post: {} // post vazio para o form
-            });
-        } catch (error) {
-            console.error('Erro ao carregar formulário:', error);
-            this.response.status(500).send('Erro ao carregar formulário');
-        }
-    }
-
-    private async processForm(): Promise<void> {
-        try {
-            const { titulo, conteudo, userId, authorId, categoryId, published } = this.getParams();
-
-            if (!titulo || !conteudo || !userId) {
-                throw new Error('Todos os campos obrigatórios devem ser preenchidos');
-            }
-
-            const post = new Post(
-                titulo.trim(),
-                conteudo.trim(),
-                parseInt(userId, 10),
-                published === 'on',
-                authorId ? parseInt(authorId, 10) : 0,
-                categoryId ? parseInt(categoryId, 10) : 1
-            );
-
-            await post.save();
-
-            this.response.redirect('/post');
-        } catch (error) {
-            console.error('Erro ao criar post:', error);
-
-            const users = await User.findAll();
-            const authors = await Author.findAll();
-            const categories = await Category.findAll();
-
-            this.response.render("post/form.twig", {
-                users,
-                authors,
-                categories,
-                post: this.getParams(),
-                error: error instanceof Error ? error.message : 'Erro ao criar post'
-            });
-        }
-    }
 }
